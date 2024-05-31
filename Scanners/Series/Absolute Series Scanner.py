@@ -188,7 +188,7 @@ WS_VERSION          = com(ur'v\d$')
 WS_DIGIT            = com(ur'^\d+(\.\d+)?$')
 WS_MULTI_EP_SIMPLE  = com(ur'^(?P<ep>\d{1,3})-(?P<ep2>\d{1,3})$')
 WS_MULTI_EP_COMPLEX = com(ur'^(ep?[ -]?)?(?P<ep>\d{1,3})(-|ep?|-ep?)(?P<ep2>\d{1,3})')
-WS_SPECIALS         = com(ur'^((t|o)\d{1,3}$|(sp|special|op|ncop|opening|ed|nced|ending|trailer|promo|pv|others?|oad)(\d{1,3})?$)')
+WS_SPECIALS         = com(ur'^((t|o)\d{1,3}$|(sp|special|op|ncop|opening|ed|nced|ending|trailer|promo|pv|others?|oad|s)(\d{1,3})?$)')
 # Switch to turn on youtube date scanning
 
 ### Setup core variables ################################################################################
@@ -689,6 +689,13 @@ def Scan(path, files, media, dirs, language=None, root=None, **kwargs): #get cal
         #msg.append(u'Removed season folder: "{}", SEASON_RX index: {}, Season: {}'.format(folder_clean, SEASON_RX.index(rx), folder_season))
         reverse_path.remove(folder)                 # Since iterating slice [:] or [:-1] doesn't hinder iteration. All ways to remove: reverse_path.pop(-1), reverse_path.remove(thing|array[0])
         break
+    
+  ### Remove Episode folder
+  for folder in reverse_path[:-1]:                  # remove root folder from test, [:-1] Doesn't thow errors but gives an empty list if items don't exist, might not be what you want in other cases
+    if reverse_path[0].lower() == u'episodes':
+      reverse_path.remove(folder)
+      msg.append(u"Removed episode folder, reverse_path:{}".format(reverse_path))
+
   folder_show = filter_chars(reverse_path[0]) if reverse_path else ""
 
   ### Remove un-needed sub-directories (mathing IGNORE_DIRS_RX) ###
